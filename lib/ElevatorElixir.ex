@@ -1,18 +1,7 @@
-defmodule ElevatorElixir2 do
-  @moduledoc """
-  Documentation for ElevatorElixir2.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> ElevatorElixir2.hello()
-      :world
-
-  """
-  def hello do
-    :world
+defmodule ElevatorElixir do
+  def init do
+    OrderServer.start_link
+    PollingServer.start_link
+    ElevatorInterface.start
   end
 end

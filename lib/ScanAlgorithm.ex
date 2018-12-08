@@ -58,11 +58,9 @@ defmodule ScanAlgorithm do
     if can_handle_order(state, order) do
       jumps
     else
-      IO.inspect state
       traverse_orders(next_state(state), order, jumps+1)
     end
   end
-
 
   def order_priority(state = %State{}, order = %Order{}) do
     case state.direction do
@@ -74,7 +72,8 @@ defmodule ScanAlgorithm do
   end
 
   def prioritize_orders(state = %State{}, orders) do
-    Enum.map(orders, fn order -> %{order | priority: order_priority(state, order)} end)
+    Enum.map(orders, fn order -> %{order | priority: order_priority(state, order)} end) |>
+    Enum.sort(fn ord1, ord2 -> ord1.priority < ord2.priority end)
   end
 
 end
