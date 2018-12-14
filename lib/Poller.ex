@@ -25,8 +25,8 @@ defmodule PollingServer do
     {:noreply, []}
   end
 
-  def handle_cast {:reached_floor, _floor}, [] do
-    #Elevatorstate.reached_floor(:Elevatorstate, floor)
+  def handle_cast {:reached_floor, floor}, [] do
+    ElevatorState.reached_floor(:ElevatorState, floor)
     {:noreply, []}
   end
 end
