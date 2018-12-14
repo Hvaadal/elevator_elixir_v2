@@ -34,8 +34,10 @@ defmodule ElevatorState do
     if OrderServer.handleable_orders_exist(:OrderServer, state) do
       ElevatorInterface.set_motor_direction(:ElevatorInterface, :stop)
       IO.puts "opening doors"
+      ElevatorInterface.set_door_open_light(:ElevatorInterface, :on)
       :timer.sleep 3000
       IO.puts "closing doors"
+      ElevatorInterface.set_door_open_light(:ElevatorInterface, :off)
       case recursive_remove_orders(state) do
         :nil ->
           IO.puts "no more orders. going idle"

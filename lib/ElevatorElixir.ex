@@ -4,8 +4,8 @@ defmodule ElevatorElixir do
     ElevatorInterface.start
     ElevatorInterface.set_motor_direction(:ElevatorInterface, :down)
     wait_for_reset()
-    OrderServer.start_link
     ElevatorState.start_link
+    OrderServer.start_link
   end
 
   def wait_for_reset do

@@ -28,13 +28,15 @@ defmodule ScanAlgorithm do
   end
 
   def can_handle_order(state = %State{floor: floor}, order = %Order{floor: floor}) do
-    case order.type do
-      :cab          -> true
-      _hall_order   -> dir_to_int(state) == dir_to_int(order)
+    case {floor, order.type} do
+      {0, _any_order}             -> true
+      {@top_floor, _any_order}    -> true
+      {_, :cab}                   -> true
+      {_, _hall_order}            -> dir_to_int(state) == dir_to_int(order)
     end
   end
 
-  def can_handle_order(state = %State{}, order = %Order{}) do
+  def can_handle_order(_state = %State{}, _order = %Order{}) do
     false
   end
 
