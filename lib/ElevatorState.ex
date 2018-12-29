@@ -22,12 +22,23 @@ defmodule ElevatorState do
     GenServer.cast(server, {:reached_floor, floor})
   end
 
+  def doors_closing(server) do
+    GenServer.cast(server, :doors_closing)
+  end
+
+  def get_state(server) do
+    GenServer.call(server, :get_state)
+  end
+
   def wake(server) do
     IO.puts "waking elevator"
     GenServer.cast(server, :wake)
   end
 
   # Casts and Calls ------------------------------------------------
+  def handle_call(:get_state, _from, state) do
+    {:reply, state, state}
+  end
 
   def handle_cast({:reached_floor, floor}, state) do
     state = %{state | floor: floor}
@@ -35,7 +46,15 @@ defmodule ElevatorState do
       ElevatorInterface.set_motor_direction(:ElevatorInterface, :stop)
       IO.puts "opening doors"
       ElevatorInterface.set_door_open_light(:ElevatorInterface, :on)
-      :timer.sleep 3000
+      Process.spawn(fn -> door_timer() end, [])
+      {:noreply, state}
+    else
+      headed_to = hd OrderServer.get_orders_prioritized(:OrderServer, state)
+      {:noreply, %{state | direction: move_towards_order(state, headed_to)}}
+    end
+  end
+
+  def handle_cast(:doors_closing, state) do
       IO.puts "closing doors"
       ElevatorInterface.set_door_open_light(:ElevatorInterface, :off)
       case recursive_remove_orders(state) do
@@ -48,10 +67,6 @@ defmodule ElevatorState do
           direction = move_towards_order(state, headed_to)
           {:noreply, %{state | direction: direction}}
       end
-    else
-      headed_to = hd OrderServer.get_orders_prioritized(:OrderServer, state)
-      {:noreply, %{state | direction: move_towards_order(state, headed_to)}}
-    end
   end
 
   def handle_cast(:wake, state)do
@@ -87,5 +102,11 @@ defmodule ElevatorState do
       ElevatorInterface.set_motor_direction(:ElevatorInterface, :down)
       :down
     end
+  end
+
+
+  def door_timer do
+    :timer.sleep(3000)
+    doors_closing(:ElevatorState)
   end
 end

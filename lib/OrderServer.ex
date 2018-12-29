@@ -32,7 +32,6 @@ defmodule OrderServer do
     GenServer.call(server, {:get_orders_prioritized, state})
   end
 
-
   def handleable_orders_exist(server, state = %State{}) do
     GenServer.call(server, {:handleable_orders_exist, state})
   end
